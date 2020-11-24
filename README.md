@@ -29,4 +29,4 @@ Any google sheet can be used as a 'blank slate' to display data that is obtained
 5. Now we need to save this function. If you try, you will likely be asked permissions like so. Grant it the required permissions.
   ![Seeking-permission](/Images/requirespermission.png)
 6. Finally, we can run our function. Click on the run button (a black triangle under the publish button). When you click on this and go back to your google sheet, you should see the following Hello World popup like so. Et Voila! You've made your first GAS project! :) 
-  ![HelloWorldpopup](/Images/helloword.png)
+  ![HelloWorldpopup](/Images/hellowordbox.png)
