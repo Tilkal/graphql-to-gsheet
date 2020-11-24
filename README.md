@@ -10,23 +10,27 @@ Table of contents
 <!--ts-->
    * [Introduction](#introduction)
    * [Table of contents](#table-of-contents)
+   * [Prerequisites](#prerequisites)
    * [How it works](#how-it-works)
    * [Installation](#installation)
-      * [Using the console](##using_the_console)
-      * [Using the Command Line Interface and clasp](##using-the-cli)
+      * [Using the console]
+      * [Using the Command Line Interface and clasp]
 <!--te-->
 
 # Prerequisites
 
+You need to have access to a google account. Specifically, you need to be able to create and edit google sheets, located within google drive. 
+You don't need any experience with command line commands and you can follow the instructions given here without the use of the command line. If you are a developer or have some more experience with the CLI, git etc., there is an installation process that works slightly more smoothly using those tools (see below). 
+
 # How it Works (for beginners)
 
-Any google sheet can be used as a 'blank slate' to display data that is obtained from a GraphQL API. The way it works, or its brain is a normally hidden script editor which can store and run code. Let's try something very simple to make things clear. Ideas for this 'How it works' is due to [Ben Collin's blog](https://www.benlcollins.com/apps-script/google-apps-script-beginner-guide/).
+Any google sheet can be used as a 'blank slate' to display data that is obtained from a GraphQL API. The way it works, or at its brain is a script editor which can store and run code. Let's try something very simple to make things clear. Ideas for this 'How it works' is due to [Ben Collin's blog](https://www.benlcollins.com/apps-script/google-apps-script-beginner-guide/).
 
 1. Open a blank google sheet in your google drive
 2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it
-3. You'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty. Let's fill it in next.
+3. You'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty. 
   ![Empty_code_editor](/Images/gaseditor.png)
-4. Write down the following code inside the myFunction function
+4. Let's fill in contents for myFunction(). Write down the following code inside the myFunction function
   ![Hello-world_function](/Images/helloworld.png)
 5. Now we need to save this function. If you try, you will likely be asked permissions like so. Grant it the required permissions.
   ![Seeking-permission](/Images/requirespermission.png)
@@ -46,7 +50,7 @@ Any google sheet can be used as a 'blank slate' to display data that is obtained
 
 ## Using the Console
 
-The *easiest* way, especially for non developers to get this up and running is to copy and paste the code from the .gs files here into the script editor of Google Sheets. If you have some experience with this, it should be fairly straightforward. 
+The *easiest* way, especially for non developers, to get this up and running is to copy and paste the code from the .gs files here into the script editor of Google Sheets. If you have some experience with this, it should be fairly straightforward. 
 
 1. Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
 
