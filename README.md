@@ -1,4 +1,4 @@
-# Graphql-tto-Gsheet in a nutshell
+# Graphql-to-Gsheet: In a nutshell
 GraphQL requests beautifully presented in a Google Sheet
 
 # Introduction 
