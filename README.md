@@ -14,7 +14,6 @@ Table of contents
    * [Installation](#installation)
       * [Using the console](#using-the-console)
       * [Using the Command Line Interface and clasp](#using-the-CLI-and-CLASP)
-   * [How it works](#how-it-works)    
 <!--te-->
 
 # Prerequisites
@@ -39,9 +38,9 @@ The *easiest* way, especially for non developers, to get this up and running is 
 
 1. Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
 
-2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it
+2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it.
 
-3. You'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty.
+3. A new window will open up where you'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty.
 
 ![Empty_code_editor](/Images/gaseditor.png)
 
@@ -53,27 +52,14 @@ The *easiest* way, especially for non developers, to get this up and running is 
 
 6. Once you have all the files in place, you are good to go. Save everything (If you see a small red star next to a filename in the script editor, it means that the file isn't saved). So make sure you save all files. 
 
-7. Refresh the Google Sheet and now you should have a pop up boxes that open up that ask for your credentials. Enter them. 
+7. Refresh the Google Sheet and now you should have a pop up boxes open up that ask for your credentials. Enter your credentials. 
 
 8. Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
 
 ![Custommenu](/Images/custommenu.png)
 
-That's it. You're all set up. Now you can access your data from Google sheets and use its BI tools like making graphs, charts and maps. If you would like to make your own functions to access even more views using google sheets and graphql, go to #how-it-works section.
+**That's it. You're all set up. Now you can access your data from Google sheets and use its BI tools like making graphs, charts and maps. If you would like to make your own functions to access even more views using google sheets and graphql, check out the How it works series of files.**
 
 
-# How it Works (for beginners)
 
-Any google sheet can be used as a 'blank slate' to display data that is obtained from a GraphQL API. The way it works, or at its brain is a script editor which can store and run code. Let's try something very simple to make things clear. Ideas for this 'How it works' is due to [Ben Collin's blog](https://www.benlcollins.com/apps-script/google-apps-script-beginner-guide/).
-
-1. Open a blank google sheet in your google drive
-2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it
-3. You'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty. 
-  ![Empty_code_editor](/Images/gaseditor.png)
-4. Let's fill in contents for myFunction(). Write down the following code inside the myFunction function
-  ![Hello-world_function](/Images/helloworld.png)
-5. Now we need to save this function. If you try, you will likely be asked permissions like so. Grant it the required permissions.
-  ![Seeking-permission](/Images/requirespermission.png)
-6. Finally, we can run our function. Click on the run button (a black triangle under the publish button). When you click on this and go back to your google sheet, you should see the following Hello World popup like so. Et Voila! You've made your first GAS project! :) 
-  ![HelloWorldpopup](/Images/hellowordbox.png)
   
