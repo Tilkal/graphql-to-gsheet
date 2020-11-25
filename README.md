@@ -1,8 +1,8 @@
-# graphql-to-gsheet
+# Graphql-tto-Gsheet in a nutshell
 GraphQL requests beautifully presented in a Google Sheet
 
 # Introduction 
-This repository serves Google Apps Script (GAS) files that can be used within your own Google sheet editor to call upon Tilkal's GraphQL API and display data within your own Google sheet.
+This repository serves Google Apps Script (GAS) files that can be used within your own Google sheet editor to call upon Tilkal's GraphQL API and display data within your Google sheet.
 
 Table of contents
 =================
@@ -21,8 +21,7 @@ Table of contents
 You need to have access to a google account. Specifically, you need to be able to create and edit google sheets, located within google drive. 
 You don't need any experience with command line commands and you can follow the instructions given here without the use of the command line. 
 
-If you are a developer or have some more experience with the CLI, git etc., there is an installation process that works slightly more smoothly using those tools (see below). In that case, you will need Node.js on your local machine.
-
+If you are a developer or have some more experience with the CLI, git etc., there is an installation process that works slightly more smoothly using those tools (see below). Please check out the prerequisites for that approach in the [Using the Command Line Interface and clasp](#using-the-CLI-and-CLASP) section
 
  # Installation
  
@@ -64,7 +63,10 @@ The *easiest* way, especially for non developers, to get this up and running is 
 
 ## Using the CLI and CLASP
 
-This installation guide is for developers or those with some more experience with the command line to make code editing a more smooth experience. We will use git to clone this repository. We will also use an open source tool called CLASP (Command Line Apps Script Project). Using CLASP allows us to use an IDE like VSCODE to edit our code (instead of the in-browser GAS editor). [Here](https://developers.google.com/apps-script/guides/clasp) is the documentation source. 
+This installation guide is for developers or those with some more experience with the command line to make code editing a more smooth experience. We will use git to clone this repository. We will also use an open source tool called CLASP (Command Line Apps Script Project). Using CLASP allows us to use an IDE like VSCODE to edit the code (instead of the in-browser GAS editor). [Here](https://developers.google.com/apps-script/guides/clasp) is the documentation source. 
+
+### Prerequisites
+You will need [Node.js](https://nodejs.org/en/download/) installed.  
 
 **1. Installation**
 
@@ -82,7 +84,7 @@ This command logs in and authorizes management of your Google account's Apps Scr
 
 **3. Create a folder of your local machine called GASproject (or another name of your liking)**
 
-**3. Clone a GAS project**
+**4. Clone a GAS project**
      - Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
      - On your local machine navigate to your GASProject folder and Clone the Google sheet project you created using 
     
@@ -90,11 +92,11 @@ This command logs in and authorizes management of your Google account's Apps Scr
 
 You specify the script project to clone by providing it's script ID. You can find the script ID of a project by opening the project in the Apps Script editor and selecting File > Project properties > Info.
 
-**4. Observe on VSCode**
+**5. Open on VSCode (or any IDE)**
 
 If you are using VSCode or any IDE, you should now see a file code.js file (Notice that the .gs file inside the Apps Script editor becomes .js on your local machine. Don't worry, once you push it back, clasp will automatically change it to .gs again)
 
-**4. Clone this repo**
+**6. Clone this repo**
 
 Now, we want to make GASProject our working directory. So, we could clone our project here or clone somewhere and move the required files to the GASProject. I would recommend cloning this repository in a different location, because we don't really need all the files (readme, images etc) in our Apps Script Project. 
 
@@ -102,29 +104,18 @@ Now, we want to make GASProject our working directory. So, we could clone our pr
 
 and move all the .gs files into the GASProject.
 
-**5. Upload these files into the Apps Script Editor**
+**7. Upload these files into the Apps Script Editor**
 
  This command uploads all of a script project's files from your computer to Google Drive.
 
 ```clasp push```
 
-**That's it. Once you've saved everything on the Apps Script Editor. Your Google Sheet Project should be running. Refresh and enter your credentials. And view your data.**
-
-NB: The advantage of using the CLI and clasp is that you can edit your code in your favourite IDE locally and with a simple ```clasp psuh``` and ```clasp pull``` you can navigate back and forth between the online editor and your local IDE. If you would like to use this method of managing your apps script project, we would highly recommend checking out clasp. For starters, please read the clasp readme here.
-
-
-**Logout**
+**8. Logout**
 
 This command logs out of the command line tool. You must re-login using clasp login to re-authenticate with Google before continuing to use clasp.
 
 ```clasp logout```
 
-1. 
+**That's it. Once you've saved everything on the Apps Script Editor. Your Google Sheet Project should be running. Refresh and enter your credentials. And view your data.**
 
-2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it.
-
-3. 
-
-
-
-  
+NB: The advantage of using the CLI and clasp is that you can edit your code in your favourite IDE locally and with a simple ```clasp psuh``` and ```clasp pull``` you can navigate back and forth between the online editor and your local IDE. If you would like to use this method of managing your apps script project, we would highly recommend checking out clasp. For starters, please read the clasp readme file in the repo.
