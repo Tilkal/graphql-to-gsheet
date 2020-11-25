@@ -37,25 +37,39 @@ If you are a developer or have some more experience with the CLI, git etc., ther
 
 The *easiest* way, especially for non developers, to get this up and running is to copy and paste the code from the .gs files here into the script editor of Google Sheets. If you have some experience with this, it should be fairly straightforward. 
 
-1. Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
+**1. Upload the TilkalGQLSheets file in Google drive**
 
-2. On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it.
+Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet.
 
-3. A new window will open up where you'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty.
+**2. Open the Apps Script Editor or GAS editor**
 
+On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it.
+
+**3. Check out the code.gs file** 
+
+A new window will open up where you'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty.
 ![Empty_code_editor](/Images/gaseditor.png)
 
-4. Delete everything from the code.gs file. From this repository, open the file onopen.gs and copy-paste the contents of it into code.gs. Now rename code.gs as      onopen.gs and save the file. 
+**4. Write your own code in the file**
 
+Delete everything from the code.gs file. From this repository, open the file onopen.gs and copy-paste the contents of it into code.gs. Now rename code.gs as      onopen.gs and save the file. 
 ![Onopen](/Images/onopen.png)
   
-5. We can do the same with the other files in the repository. Let us say you want to copy searchbybatch.gs. Go to File > New > Script file and enter the name 'searchbybatch'. This opens up another script file with an empty function. As before, delete this and copy-paste the contents of searchbybatch.gs file from the repo to the empty script file in your browser. 
+**5. Upload other files into the editor**
 
-6. Once you have all the files in place, you are good to go. Save everything (If you see a small red star next to a filename in the script editor, it means that the file isn't saved). So make sure you save all files. 
+We can do the same with the other files in the repository. Let us say you want to copy searchbybatch.gs. Go to File > New > Script file and enter the name 'searchbybatch'. This opens up another script file with an empty function. As before, delete this and copy-paste the contents of searchbybatch.gs file from the repo to the empty script file in your browser. 
 
-7. Refresh the Google Sheet and now you should have a pop up boxes open up that ask for your credentials. Enter your credentials. 
+**6. Save**
 
-8. Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
+Once you have all the files in place, you are good to go. Save everything (If you see a small red star next to a filename in the script editor, it means that the file isn't saved). So make sure you save all files. 
+
+**7. Execute** 
+
+Refresh the Google Sheet and now you should have a pop up boxes open up that ask for your credentials. Enter your credentials. 
+
+**8. Custom Tilkal Menu**
+
+Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
 
 ![Custommenu](/Images/custommenu.png)
 
@@ -88,7 +102,7 @@ This command logs in and authorizes management of your Google account's Apps Scr
      - Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
      - On your local machine navigate to your GASProject folder and Clone the Google sheet project you created using 
     
-    ```clasp clone <scriptId>```
+```clasp clone <scriptId>```
 
 You specify the script project to clone by providing it's script ID. You can find the script ID of a project by opening the project in the Apps Script editor and selecting File > Project properties > Info.
 
