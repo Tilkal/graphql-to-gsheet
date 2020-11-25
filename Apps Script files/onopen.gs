@@ -5,10 +5,7 @@
 
 function onOpen() {
   // Clear all sheets of any data if present
-  ClearCells("Searchbybatch");
-  ClearCells("Customerreviews");
-  ClearCells("WeeklyReport");
-
+  cleardata();
 
   // Ask the client for credentials. Set these as script properties that can be accessed by other functions in this app.  
   // These will be deleted and repopulated (by the user) every time this function is run, including every time this Spreadsheet is opened or refreshed.
@@ -16,6 +13,7 @@ function onOpen() {
   scriptProperties.deleteAllProperties();
 
   // Prompt the user to enter client id and client secret. These are stored as CLIENTID, CLIENTSECRET in File > Project Properties > Script Properties.
+  var ui = SpreadsheetApp.getUi();
   var clientname = ui.prompt("Please Enter the actor name").getResponseText();
   var networkname = ui.prompt("Please Enter the network name").getResponseText();
   var clientid = ui.prompt("Please Enter your client id").getResponseText();
@@ -27,7 +25,7 @@ function onOpen() {
   scriptProperties.setProperty('CLIENTSECRET', clientsecret);
 
   //Create a custom Menu
-  var ui = SpreadsheetApp.getUi();
+  
   ui.createMenu('Custom Tilkal Menu')
       .addItem('Get data for a specific batch', 'bybatch')
       .addItem('Read customer reviews', 'reviews')
