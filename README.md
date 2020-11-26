@@ -101,8 +101,10 @@ This command logs in and authorizes management of your Google account's Apps Scr
 **3. Create a folder of your local machine called GASproject (or another name of your liking)**
 
 **4. Clone a GAS project**
-     - Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
-     - On your local machine navigate to your GASProject folder and Clone the Google sheet project you created using 
+
+   - Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet.
+   - Save the file as a GoogleSheet. Go to File > Save as GoogleSheet.
+   - On your local machine navigate to your GASProject folder and Clone the Google sheet project you created using
     
 ```clasp clone <scriptId>```
 
@@ -119,6 +121,8 @@ Now, we want to make GASProject our working directory. So, we could clone our pr
 ```git clone https://github.com/rrupam/graphql-to-gsheet.git``` 
 
 and move all the .gs files into the GASProject.
+
+#### NOTE: You should rename the extension of your files from .gs to .js to fully use the functionalities of the IDE.
 
 **7. Upload these files into the Apps Script Editor**
 
