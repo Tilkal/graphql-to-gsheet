@@ -13,7 +13,7 @@ Table of contents
    * [Prerequisites](#prerequisites)
    * [Installation](#installation)
       * [Using the console](#using-the-console)
-      * [Using the Command Line Interface and clasp](#using-the-CLI-and-CLASP)
+      * [**(optional)** Using the Command Line Interface and clasp](#using-the-CLI-and-CLASP) 
 <!--te-->
 
 # Prerequisites
@@ -21,7 +21,7 @@ Table of contents
 You need to have access to a google account. Specifically, you need to be able to create and edit google sheets, located within google drive. 
 You don't need any experience with command line commands and you can follow the instructions given here without the use of the command line. 
 
-If you are a developer or have some more experience with the CLI, git etc., there is an installation process that works slightly more smoothly using those tools (see below). Please check out the prerequisites for that approach in the [Using the Command Line Interface and clasp](#using-the-CLI-and-CLASP) section
+If you are a developer or have some more experience with the CLI, git etc., there is an installation process that works slightly more smoothly using those tools (see below). Please check out the prerequisites for that approach in the [Using the Command Line Interface and CLASP](#using-the-CLI-and-CLASP) section
 
  # Installation
  
@@ -35,11 +35,13 @@ If you are a developer or have some more experience with the CLI, git etc., ther
 
 ## Using the Console
 
-The *easiest* way, especially for non developers, to get this up and running is to copy and paste the code from the .gs files here into the script editor of Google Sheets. If you have some experience with this, it should be fairly straightforward. 
+The *easiest* way to get this up and running is to copy and paste the code from the .gs files here into the script editor of Google Sheets. If you have some experience with this, it should be fairly straightforward. 
 
 **1. Upload the TilkalGQLSheets file in Google drive**
 
-Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet.
+Download the file TilkalGQL2Sheets.xlsx. Upload it to your Google Drive and open it as a Google Sheet. 
+
+**Save the file as a GoogleSheet. Go to File > Save as GoogleSheet**
 
 **2. Open the Apps Script Editor or GAS editor**
 
@@ -52,7 +54,7 @@ A new window will open up where you'll see an almost empty code editor like belo
 
 **4. Write your own code in the file**
 
-Delete everything from the code.gs file. From this repository, open the file onopen.gs and copy-paste the contents of it into code.gs. Now rename code.gs as      onopen.gs and save the file. 
+Delete the empty myFunction() from the code.gs file. On this blank sheet, we will write the code from this repository. First, change the name of code.gs to **onopen.gs** by clicking on the down arrow next to the file name. On this repository, open the Apps Script files folder and open **onopen.gs** and copy-paste the contents of it into **onopen.gs**. **SAVE THE FILE.** (ctrl + s) 
 ![Onopen](/Images/onopen.png)
   
 **5. Upload other files into the editor**
