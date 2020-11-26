@@ -44,6 +44,7 @@ function customdates() {
 
 function bybatch() {
   // This function calls the awsserachbybatch function
+  ClearCells("Searchbybatch")
   awssearchbybatch();
 }
 
@@ -54,16 +55,20 @@ function scanssearch() {
 
 function weeklyreport() {
  // This function calls the generateweeklyreport function
+  ClearCells("WeeklyReport")
   getreport();
 }  
 
 function reviews() {
- // This function calls the awssearchreviews function
+ // This function calls the ClearCells and awssearchreviews function
+  ClearCells("Customerreviews") 
   awssearchreviews();
 }
 
 function cleardata() {
- // This function calls the ClearCells function
+ // This function deletes all the Script Properties and calls the ClearCells function
+  var scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.deleteAllProperties(); 
   ClearCells("Searchbybatch");
   ClearCells("Customerreviews");
   ClearCells("WeeklyReport");
