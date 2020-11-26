@@ -4,6 +4,7 @@ function getreport() {
   */
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheetname = ss.getSheetByName("WeeklyReport");
+  
   // Set starting row and columns here
   startingrow = 13
   startingcolumn = 2
@@ -179,6 +180,3 @@ function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
   }
  }
 }
-
-
-
