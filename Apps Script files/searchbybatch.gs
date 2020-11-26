@@ -7,12 +7,11 @@ function awssearchbybatch(){
   4. Based on the batchdetails (ex: if batch has 3 GTINs of 120, 2157 and 4 purchase orders or displayidentifiers), it displays the purchase orders by each GTIN on a different column  
   */
   
-  // Clear the 'Searchbybatch' sheet
+  // Get the 'Searchbybatch' sheet
   var sheetname = 'Searchbybatch'
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetname);
-  sheet.getRange('B12:G12').clearContent();        
-  sheet.getRange('B14:G3000').clearContent();
+  
   
   // Get user input. Ask the batch number
   var ui = SpreadsheetApp.getUi();
