@@ -17,9 +17,9 @@ function awssearchbybatch(){
   var ui = SpreadsheetApp.getUi();
   var batch = ui.prompt("Please Enter batch number").getResponseText();
   var stats = batchdetails(batch);
-  idcount = stats.idcount;
-  bizcountsarray = stats.bizcounts; 
-  identifiers = stats.identifiers;
+  var idcount = stats.idcount;
+  var bizcountsarray = stats.bizcounts; 
+  var identifiers = stats.identifiers;
           
           
   //Repeat on loop for each GTIN
@@ -33,7 +33,7 @@ function awssearchbybatch(){
        
        for (var n=0; n<offset; ++n) {
          var query = createbybatchquery(identifiers[m], 1000*n);
-         response = sendpostrequest(query);
+         var response = sendpostrequest(query);
          var json = response.getContentText();
          var data = JSON.parse(json);
          var result = data["data"]["assets"]["edges"];
@@ -55,10 +55,10 @@ function batchdetails(batch){
   batch = '"' + batch + '"';
   var columnvalues = "{assets(search:" + batch + "){count edges{node{identifier biztransactions{count}}}}}";
   Logger.log(columnvalues)
-  response = sendpostrequest(columnvalues);
-  idcount = JSON.parse(response.getContentText())["data"]["assets"]["count"];
-  bizcounts = []
-  identifiers = []
+  var response = sendpostrequest(columnvalues);
+  var idcount = JSON.parse(response.getContentText())["data"]["assets"]["count"];
+  var bizcounts = []
+  var identifiers = []
   for (var m=0; m<idcount; ++m) {
     bizcounts[m] = JSON.parse(response.getContentText())["data"]["assets"]["edges"][m].node["biztransactions"]["count"]
     identifiers[m] = JSON.parse(response.getContentText())["data"]["assets"]["edges"][m].node["identifier"]
