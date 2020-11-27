@@ -6,13 +6,13 @@ function getreport() {
   var sheetname = ss.getSheetByName("WeeklyReport");
   
   // Set starting row and columns here
-  startingrow = 13
-  startingcolumn = 2
+  var startingrow = 13
+  var startingcolumn = 2
   
   // Get the Start and End dates and the period/gapchoice (daily, weekly etc) from the sheet
   var dates = sheetname.getRange(9, 4, 1, 3).getValues();
-  FinalEndDate = new Date(dates[0][1]);
-  FinalStartDate = new Date(dates[0][0]);
+  var FinalEndDate = new Date(dates[0][1]);
+  var FinalStartDate = new Date(dates[0][0]);
   var gapchoice = dates[0][2]
   if (gapchoice == 'Monthly'){var gap = 30}
   if (gapchoice == 'Weekly'){var gap = 7}
@@ -26,8 +26,8 @@ function getreport() {
   
   // Calculate the start and end dates for each row, call all the query functions and fill in the respective columns
   for (var i = 0; i < numberofloops+1; ++i) {
-    EndDate = new Date(FinalStartDate);
-    StartDate = new Date(FinalStartDate);
+    var EndDate = new Date(FinalStartDate);
+    var StartDate = new Date(FinalStartDate);
      if (i== numberofloops){
        // In case we are on the last row, the end date should match the end date entered by user and not overshoot it
        EndDate = new Date(FinalEndDate);
@@ -50,7 +50,7 @@ function getreport() {
     EndDate = '"' + String(Utilities.formatDate(EndDate, "GMT+2", "yyyy-MM-dd'T'HH:mm:ss'Z'")) + '"';
     
     // Send in the parameters to the query function to generate a new query
-    query = timeboundtypescountquery(StartDate, EndDate,"shipping");
+    var query = timeboundtypescountquery(StartDate, EndDate,"shipping");
     parseweeklyreportsquery(query,"shipping", i, startingrow, startingcolumn);
     query = timeboundtypescountquery(StartDate, EndDate,"receiving");
     parseweeklyreportsquery(query, "receiving", i, startingrow, startingcolumn)
@@ -108,7 +108,7 @@ function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
   */
   
   // Send query to postrequest
-  response = sendpostrequest(query);  
+  var response = sendpostrequest(query);  
   
   // Parse the JSON response
   var json = response.getContentText();
