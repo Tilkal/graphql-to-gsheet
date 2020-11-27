@@ -44,12 +44,7 @@ function sendpostrequest(query) {
   //Make a query with the obtained token 
   var clientname = PropertiesService.getScriptProperties().getProperty('CLIENTNAME');
   var networkname = PropertiesService.getScriptProperties().getProperty('NETWORKNAME');
-  if (clientname == "better-products-inc"){
-      var url = "https://"+ clientname + "." + networkname + ".tilkal.net/graphql"
-     }
-  else {    
   var url = "https://"+ clientname + "." + networkname + ".tilkal.com/graphql"
-     }
       
   //Logger.log(query) //Uncomment this line if you would like to log the query that you send
   var options = { 
