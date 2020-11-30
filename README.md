@@ -4,6 +4,8 @@ GraphQL requests beautifully presented in a Google Sheet
 # Introduction 
 This repository serves Google Apps Script (GAS) files that can be used within your own Google sheet editor to call upon Tilkal's GraphQL API and display data within your Google sheet.
 
+[According to Google](https://developers.google.com/apps-script/overview), Google Apps Script is a rapid application development platform that makes it fast and easy to create business applications that integrate with Google Workspace. You write code in modern JavaScript and have access to built-in libraries for favorite Google Workspace applications like Gmail, Calendar, Drive, and more. There's nothing to install—we give you a code editor right in your browser, and your scripts run on Google's servers. 
+
 Table of contents
 =================
 
@@ -50,6 +52,8 @@ On the menu bar, navigate to `Tools` and then  `<>Script Editor` and click on it
 **3. Check out the code.gs file** 
 
 A new window will open up where you'll see an almost empty code editor like below. Code.gs is a Google Apps Script file. myFunction() is a function, which is now empty.
+
+
 ![Empty_code_editor](/Images/gaseditor.png)
 
 **4. Write your own code in the file**
@@ -72,6 +76,7 @@ Refresh the Google Sheet and now you should have a pop up boxes open up that ask
 **8. Custom Tilkal Menu**
 
 Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
+
 
 ![Custommenu](/Images/custommenu.png)
 
