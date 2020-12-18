@@ -71,14 +71,14 @@ Once you have all the files in place, you are good to go. Save everything (If yo
 
 **7. Execute** 
 
-Refresh the Google Sheet and now you should have a pop up boxes open up that ask for your credentials. Enter your credentials. 
-
-**8. Custom Tilkal Menu**
-
-Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
-
-
+Refresh the Google Sheet. Now, you should see a a **'Custom Tilkal Menu'** on the menu bar. Click on it to see the various views available to see your data. Click on one of the options. 
 ![Custommenu](/Images/custommenu.png)
+
+You will be asked to authorize google apps script to let you execute code. Give it the necessary permissions. Once you do, you may have to click on the **Custom Tilkal Menu** on the menu bar again. Make your choice one more time. This time, a new pop up box should open up asking you to enter a credential like 'Client name'. Once you enter this, another box will pop up asking for network name. Once all the credentials have been provided, your script will run and you should see the result on the relevant page. 
+
+
+
+
 
 **That's it. You're all set up. Now you can access your data from Google sheets and use its BI tools like making graphs, charts and maps. If you would like to make your own functions to access even more views using google sheets and graphql, check out the How it works series of files.**
 
