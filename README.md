@@ -74,7 +74,12 @@ Once you have all the files in place, you are good to go. Save everything (If yo
 Refresh the Google Sheet. Now, you should see a a **'Custom Tilkal Menu'** on the menu bar. Click on it to see the various views available to see your data. Click on one of the options. 
 ![Custommenu](/Images/custommenu.png)
 
-You will be asked to authorize google apps script to let you execute code. Give it the necessary permissions. Once you do, you may have to click on the **Custom Tilkal Menu** on the menu bar again. Make your choice one more time. This time, a new pop up box should open up asking you to enter a credential like 'Client name'. Once you enter this, another box will pop up asking for network name. Once all the credentials have been provided, your script will run and you should see the result on the relevant page. 
+You will be asked to authorize google apps script to let you execute code. Give it the necessary permissions. Once you do, you may have to click on the **Custom Tilkal Menu** on the menu bar again. Make your choice one more time. This time, a new pop up box should open up asking you to enter a credential like 'Client name'. 
+
+![Credentials](/Images/credentials.png)
+
+
+Once you enter this, another box will pop up asking for network name. Once all the credentials have been provided, your script will run and you should see the result on the relevant page. 
 
 
 
