@@ -45,7 +45,7 @@ function sendpostrequest(query) {
   var clientname = PropertiesService.getScriptProperties().getProperty('CLIENTNAME');
   var networkname = PropertiesService.getScriptProperties().getProperty('NETWORKNAME');
   var url = "https://"+ clientname + "." + networkname + ".tilkal.com/graphql"
-      
+          
   //Logger.log(query) //Uncomment this line if you would like to log the query that you send
   var options = { 
     "method" : "POST",
@@ -58,78 +58,71 @@ function sendpostrequest(query) {
 }
 
 
-
 function ClearCells(sheetname) {
-  // This function clears cells in the spreadsheet, on sheet dpecified by the passed value 'sheetname'
+  // This function clears cells in the spreadsheet, on sheet specified by the passed value 'sheetname'
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (sheetname == "WeeklyReport"){
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetname);
     sheet.getRange('B13:J1000').clearContent();
   }
   else if (sheetname == "Customerreviews"){
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetname);
     sheet.getRange('B9:D1000').clearContent();
   }
   else if (sheetname == "Searchbybatch"){
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetname);
     sheet.getRange('C9').clearContent();
     sheet.getRange('B12:G12').clearContent();
     sheet.getRange('B14:G5000').clearContent();
   }
+}
+
+
+function PromptUserCredentials() {
+
+  // Ask the client for credentials. Set these as script properties that can be accessed by other functions in this app.  
+  // These will be deleted and repopulated (by the user) every time this function is run, including every time this Spreadsheet is opened or refreshed.
+  var scriptProperties = PropertiesService.getScriptProperties();
+
+  var clientsecret = scriptProperties.getProperty('CLIENTSECRET');
+  if (clientsecret) { return }
+  // Prompt the user to enter client id and client secret. These are stored as CLIENTID, CLIENTSECRET in File > Project Properties > Script Properties.
+  var ui = SpreadsheetApp.getUi();
+  var clientname = ui.prompt("Please Enter the actor name").getResponseText();
+  var networkname = ui.prompt("Please Enter the network name").getResponseText();
+  var clientid = ui.prompt("Please Enter your client id").getResponseText();
+  var clientsecret = ui.prompt("Please Enter your client secret").getResponseText();
   
-  else {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(sheetname);
-  sheet.getRange('A1:H5000').clearContent();
-  }
+  scriptProperties.setProperty('CLIENTNAME', clientname);
+  scriptProperties.setProperty('NETWORKNAME', networkname)
+  scriptProperties.setProperty('CLIENTID', clientid);
+  scriptProperties.setProperty('CLIENTSECRET', clientsecret);
 }
 
-
-
-function thisweek() {
-  // This function calls the awsquery function with zero offset since it's the immediate past week
-  awsqueryweek(0);
-}
-
-function lastweek() {
-  // This function calls the awsquery function with offset=1 since it's the week before the immediate past week
-  awsqueryweek(1);
-} 
-
-function customdates() {
-  // This function calls the awsquerycustomdates function 
-  awsquerycustomdates();
-}  
 
 function bybatch() {
   // This function calls the awsserachbybatch function
-  ClearCells("Searchbybatch")
+  PromptUserCredentials()
   awssearchbybatch();
 }
 
-function scanssearch() {
- // This function calls the awssearchscans function
-  awssearchscans();
-}
 
 function weeklyreport() {
  // This function calls the generateweeklyreport function
-  ClearCells("WeeklyReport")
+  PromptUserCredentials()
   getreport();
 }  
 
 function reviews() {
- // This function calls the ClearCells and awssearchreviews function
-  ClearCells("Customerreviews") 
+ // This function calls the awssearchreviews function
+  PromptUserCredentials()
   awssearchreviews();
 }
 
 function cleardata() {
- // This function deletes all the Script Properties and calls the ClearCells function
+ // This function calls the ClearCells function
   var scriptProperties = PropertiesService.getScriptProperties();
-  scriptProperties.deleteAllProperties(); 
+  scriptProperties.deleteAllProperties();
   ClearCells("Searchbybatch");
   ClearCells("Customerreviews");
   ClearCells("WeeklyReport");
