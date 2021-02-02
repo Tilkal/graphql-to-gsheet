@@ -394,11 +394,15 @@ function getreport() {
     parseweeklyreportsquery(query, "ratings", i, startingrow, startingcolumn)
     query = timeboundaverageratingsquery(StartDate, EndDate);
     parseweeklyreportsquery(query, "averageratings", i, startingrow, startingcolumn)
-    }
+
+    /*parseweeklyreportsquery(
+      averageRepeatedClicksQuery(StartDate, EndDate), 
+      'averageRepetedClicks',
+      i, 
+      startingrow, 
+      startingcolumn)*/
+  }
 }
-
-
-
 
 function timeboundtypescountquery(StartDate, EndDate, type) {
   // This function creates the query to count the number of shipping events and number of receiving events. Type = "shipping"/"receiving" between start and end dates
@@ -408,30 +412,49 @@ function timeboundtypescountquery(StartDate, EndDate, type) {
 
 function timeboundscanscountquery(StartDate, EndDate) {
   // This function creates the query to count the number of scans between start and end dates
-  var columnvalues= "{sessions(query:{CREATED_AT:{operator: BETWEEN, value: ["+ StartDate+ "," + EndDate + "]}}){count}}";
+  var columnvalues= "{sessions(query:{CREATEDAT:{operator: BETWEEN, value: ["+ StartDate+ "," + EndDate + "]}}){count}}";
+  Logger.log(columnvalues)
   return columnvalues
 }
 
 function timeboundreviewscountquery(StartDate, EndDate){
   // This function creates the query to count the number of reviews between start and end dates
-  var columnvalues = "{sessions(query:{CREATED_AT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} COMMENT: { operator: IS_NOT_NULL }}){count}}" 
+  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} COMMENT: { operator: IS_NOT_NULL }}){count}}" 
   //Logger.log(columnvalues); // Uncomment this if you want to log the query
   return columnvalues
 }
 
 function timeboundratingscountquery(StartDate, EndDate) {
   // This function creates the query to count the number of ratings between start and end dates
-  var columnvalues = "{sessions(query:{CREATED_AT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count}}" 
+  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count}}" 
   return columnvalues
 }
 
 function timeboundaverageratingsquery(StartDate, EndDate) {
   // This function creates the query to access the ratings
-  var columnvalues = "{sessions(query:{CREATED_AT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count edges {node{answers{count edges{node{rating}}}}}}}" 
+  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count edges {node{answers{count edges{node{rating}}}}}}}" 
   return columnvalues
 }
 
-
+const averageRepeatedClicksQuery = (startDate, endDate) => {
+  return `
+  {
+    biztransactions {
+      edges {
+        node {
+          sessions(
+            query: {
+              CREATEDAT: {
+                operator: BETWEEN
+                value: [${startDate}, ${endDate}]
+              }
+            }
+          ) { count }
+        }
+      }
+    }
+  }`
+}
 
 function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
   /*
@@ -440,6 +463,7 @@ function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
   */
   
   // Send query to postrequest
+  Logger.log(query)
   var response = sendpostrequest(query);  
   
   // Parse the JSON response
@@ -510,5 +534,28 @@ function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
       var rng = sheetname.getRange(startingrow+row, startingcolumn+7, 1, 1)    
       rng.setValue(avgrating)
   }
+ }
+
+ if(type === 'averageRepetedClicks') {
+  const biztransactions = data["data"]["biztransactions"]["edges"]
+  if(!Array.isArray(biztransactions) || biztransactions.length === 0) { return undefined }
+
+  var clickedBiztx = 0
+  var total = 0
+  biztransactions.forEach(
+    (biztransaction) => {
+      const count = biztransaction["node"]["sessions"]["count"]
+      if(count === 0) { return }
+      clickedBiztx ++
+      return total += count
+   })
+
+  var average = 0  
+  if(total !== 0 && clickedBiztx !== 0) { 
+    average = total / clickedBiztx
+  }
+
+  var rng = sheetname.getRange(startingrow+row, startingcolumn+8, 1, 1)    
+  rng.setValue(average)
  }
 }
