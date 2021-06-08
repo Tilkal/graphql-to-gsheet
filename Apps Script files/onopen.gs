@@ -4,8 +4,13 @@
  
 
 function onOpen() {
-  // Clear all sheets of any data if present
-  cleardata();
+  // Clear clientsecretid of any data if present
+  var scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.deleteProperty ('CLIENTSECRET');
+  ClearCells("Searchbybatch");
+  ClearCells("Customerreviews");
+  ClearCells("WeeklyReport");
+
 
   //Create a custom Menu
   var ui = SpreadsheetApp.getUi();
@@ -16,6 +21,7 @@ function onOpen() {
       .addItem('Clear All Data', 'cleardata')
       .addToUi();
 }
+
 
 function awscognito(){
   /* 
@@ -63,15 +69,17 @@ function sendpostrequest(query) {
   //Make a query with the obtained token 
   var clientname = PropertiesService.getScriptProperties().getProperty('CLIENTNAME');
   var networkname = PropertiesService.getScriptProperties().getProperty('NETWORKNAME');
-  var url = "https://"+ clientname + "." + networkname + ".tilkal.com/graphql"
-          
+    
+  var url = "https://"+ clientname + "." + networkname + ".tilkal.com/v2/graphql"
+     
+      
   //Logger.log(query) //Uncomment this line if you would like to log the query that you send
   var options = { 
     "method" : "POST",
     "headers": {"Content-Type" : "application/json","Authorization" : " Bearer " + token},
     "payload": JSON.stringify({"query":query}),
   };
-  response= UrlFetchApp.fetch(url, options); 
+  response= UrlFetchApp.fetch(url, options);
   
   return response;
 }
@@ -82,7 +90,7 @@ function ClearCells(sheetname) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (sheetname == "WeeklyReport"){
     var sheet = ss.getSheetByName(sheetname);
-    sheet.getRange('B13:J1000').clearContent();
+    sheet.getRange('B13:N1000').clearContent();
   }
   else if (sheetname == "Customerreviews"){
     var sheet = ss.getSheetByName(sheetname);
@@ -105,6 +113,15 @@ function PromptUserCredentials() {
 
   var clientsecret = scriptProperties.getProperty('CLIENTSECRET');
   if (clientsecret) { return }
+  
+  // If clientsecret is absent, check if clientid is present. If yes, just ask only for clientsecret 
+  var clientid =scriptProperties.getProperty('CLIENTID');
+  if (clientid) {
+    var ui = SpreadsheetApp.getUi();
+    var clientsecret = ui.prompt("Please Enter your client secret").getResponseText()
+    scriptProperties.setProperty('CLIENTSECRET', clientsecret);
+    return }
+
   // Prompt the user to enter client id and client secret. These are stored as CLIENTID, CLIENTSECRET in File > Project Properties > Script Properties.
   var ui = SpreadsheetApp.getUi();
   var clientname = ui.prompt("Please Enter the actor name").getResponseText();
@@ -121,7 +138,6 @@ function PromptUserCredentials() {
 
 function bybatch() {
   // This function calls the awsserachbybatch function
-  ClearCells('Searchbybatch')
   PromptUserCredentials()
   awssearchbybatch();
 }
@@ -129,14 +145,12 @@ function bybatch() {
 
 function weeklyreport() {
  // This function calls the generateweeklyreport function
-  ClearCells('WeeklyReport')
   PromptUserCredentials()
   getreport();
 }  
 
 function reviews() {
  // This function calls the awssearchreviews function
-  ClearCells('Customerreviews')
   PromptUserCredentials()
   awssearchreviews();
 }
@@ -148,61 +162,6 @@ function cleardata() {
   ClearCells("Searchbybatch");
   ClearCells("Customerreviews");
   ClearCells("WeeklyReport");
-}
-
-function awssearchreviews() {
-  /*
-  This is the main function to call for the customer reviews sheet. 
-  This function calls the reviewsquery function to create the required query and then passes the query to the parsereviewsquery function to parse the response and display on the google sheet.
-  */
-  query = reviewsquery();
-  parsereviewsquery(query);
-}
-
-
-function reviewsquery() {
-  var columnvalues= "{answers{edges{node{comment rating createdAt}}}}";
-  Logger.log(columnvalues);
-  return columnvalues
-}
-
-
-function parsereviewsquery(query){
-  /* 
-  This function takes in the passed parameter which is the graphql query and sends it to the sendpostrequest function.
-  Once the response is obtained, it parses it and then displays it on the google sheet.
-  */
-  
-  response = sendpostrequest(query);  
-  //Logger.log(response); //Uncomment this line if you want to log the http response
-  
-  // Parse the JSON reply
-  var json = response.getContentText();
-  var data = JSON.parse(json);
-  
-  // The data is a JSON object of the form {"data"{"answers"{"edges":[{"node}...]}
-  var result = data["data"]["answers"]["edges"];
-  
-  //Get the sheetname
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var reviewssheet = ss.getSheetByName("Customerreviews");
-  
-  //Set starting row and column
-  startingrow = 9
-  startingcolumn = 2
-  
-  for (var i = 0, leni = result.length; i < leni; ++i) {
-    var data = result[i].node;
-    var headerRow = Object.keys(data);
-    Logger.log("header row is" + headerRow);
-    // define an array of all the object values
-    
-    Object.keys(data).forEach(function(key, j) {
-      var value = data[key];
-      var rng = reviewssheet.getRange(i+startingrow, j+startingcolumn, 1, 1)
-      rng.setValue(value);
-    })
-   }
 }
 
 function awssearchbybatch(){
@@ -218,6 +177,7 @@ function awssearchbybatch(){
   var sheetname = 'Searchbybatch'
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(sheetname);
+  ClearCells('Searchbybatch')
   
   
   // Get user input. Ask the batch number
@@ -225,32 +185,38 @@ function awssearchbybatch(){
   var batch = ui.prompt("Please Enter batch number").getResponseText();
   var stats = batchdetails(batch);
   var idcount = stats.idcount;
-  var bizcountsarray = stats.bizcounts; 
   var identifiers = stats.identifiers;
-          
-          
+        
+     
   //Repeat on loop for each GTIN
   for (var m=0; m<idcount; ++m) {
-       // Calculate number of offsets required for each identifier because
-       // GraphQL returns only the first 1000. In order to get all the results, we need to keep offsetting our query.   
-       // For. e.g. if there are 2157, the number of offsets will be 3 (0-1000, 1000-2000, 2000-2157).
+    // Create a query to get all the POs related to this particular identifier
+    var query = `
+        {
+          assets(
+            filter: {
+              rowId: { equalTo: "${identifiers[m]}"}
+              type: { equalTo: "Lot" }
+            }
+          ) {
+            nodes {
+              biztransactions {
+                nodes {
+                  displayId
+                }
+              }
+            }
+          }
+        }`
        
-       offset = parseInt(bizcountsarray[m]/1000)+1;
-       //Logger.log(offset). //Uncomment this line if you want to see the number of offsets for each GTIN 
-       
-       for (var n=0; n<offset; ++n) {
-         var query = createbybatchquery(identifiers[m], 1000*n);
-         var response = sendpostrequest(query);
+         response = sendpostrequest(query);
          var json = response.getContentText();
          var data = JSON.parse(json);
-         var result = data["data"]["assets"]["edges"];
-         parsebatchquery(result, batch, identifiers[m], m, (n*1000 + 2))
+         
+  parsebatchquery(data, batch, identifiers[m], m)
        }
-  }
-  //Logger.log(idcount); //Uncomment this line if you want to log which GTIN count we are on 1, 2, 3 ...
-  //Logger.log(bizcountsarray); //Uncomment this line if you want to log the count of this purchase order or displayidentifiers 
 }
-
+  
 
 function batchdetails(batch){
   /* This function gets all the details realted to a batch id. The batch id is passed as a parameter to this function. 
@@ -259,22 +225,32 @@ function batchdetails(batch){
   bizcounts: an array of number of purchase orders for each GTIN
   identifiers: an array of GTINs
   */
-  batch = '"' + batch + '"';
-  var columnvalues = "{assets(search:" + batch + "){count edges{node{identifier biztransactions{count}}}}}";
-  Logger.log(columnvalues)
-  var response = sendpostrequest(columnvalues);
-  var idcount = JSON.parse(response.getContentText())["data"]["assets"]["count"];
-  var bizcounts = []
-  var identifiers = []
-  for (var m=0; m<idcount; ++m) {
-    bizcounts[m] = JSON.parse(response.getContentText())["data"]["assets"]["edges"][m].node["biztransactions"]["count"]
-    identifiers[m] = JSON.parse(response.getContentText())["data"]["assets"]["edges"][m].node["identifier"]
+  
+  var query = `
+  {
+  assets(
+    filter: { displayId: { equalTo: "${batch}"  }, type: { equalTo: "Lot" } }
+  ) {
+    totalCount
+    nodes {
+      rowId
+      biztransactions {
+        totalCount
+      }
+    }
   }
-  return {idcount, bizcounts, identifiers}
+}
+`
+  
+  const response = sendpostrequest(query);
+  const data = JSON.parse(response.getContentText());
+  const idcount = data["data"]["assets"]["totalCount"]  // Get the total number of GTINs with this batch number
+  const identifiers = data["data"]["assets"]["nodes"].map((asset) => asset["rowId"])
+  return {idcount, identifiers}
 }
 
 
-function parsebatchquery(result, batch, identifier, idnum, startingrow) {  
+function parsebatchquery(result, batch, identifier, idnum) {  
   /* Display the results on the spreadsheet
   result : parsed JSON response
   batch : batch # entered by client
@@ -307,258 +283,398 @@ function parsebatchquery(result, batch, identifier, idnum, startingrow) {
   rng.setValue("Purchase Order(s)")
   
   //Get each individual purchase order
-  var biztransactions=result[0].node["biztransactions"]["edges"];
-  Logger.log("Number of nodes is" + biztransactions.length);
+
+  var biztxs = result["data"]["assets"]["nodes"][0]["biztransactions"]["nodes"]
+
   //Loop through each purchase order and display the results
-  for (var j = 0, lenj = biztransactions.length; j < lenj; ++j) {
-    var node = biztransactions[j].node
-    var headerRow = Object.keys(node);
-    
-    // define an array of all the object values
-    var row = headerRow.map(function(key){ return node[key]});
-        
-    // Write all the values in the key:value pairs inside the last "node"
-    for (var k=0, lenk=row.length; k<lenk;++k) {
-      var rng = Searchbybatch.getRange(startingrow + j+firstrow+1, idnum + 2, 1, 1)
-      rng.setValue(row[k])
-    }
+  for (var j = 0, lenj = biztxs.length; j < lenj; ++j) {
+    var displayid = biztxs[j]["displayId"]
+    var rng = Searchbybatch.getRange(14 + j, idnum + 2, 1, 1)
+    rng.setValue(displayid)
 }
 }
           
-function createbybatchquery(identifier, offset) {
-  // Create the GraphQL query that requests the details of the assets based on identifier (GTIN)
-  identifier = '"' + identifier + '"';
-  var columnvalues = "{assets(search:" + identifier + "){edges{node{identifier displayIdentifier biztransactions(first:1000, offset:"+offset+"){edges {node {displayIdentifier}}}}}}}";
-  Logger.log(columnvalues);
-  return columnvalues
-}
-
+// @ts-nocheck
 function getreport() {
   /*
   This is the main function for the weeklyreport sheet. 
   */
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheetname = ss.getSheetByName("WeeklyReport");
-  
+  var ss = SpreadsheetApp.getActiveSpreadsheet()
+  var sheetname = ss.getSheetByName("WeeklyReport")
+  ClearCells("WeeklyReport")
   // Set starting row and columns here
   var startingrow = 13
   var startingcolumn = 2
-  
+
   // Get the Start and End dates and the period/gapchoice (daily, weekly etc) from the sheet
-  var dates = sheetname.getRange(9, 4, 1, 3).getValues();
-  var FinalEndDate = new Date(dates[0][1]);
-  var FinalStartDate = new Date(dates[0][0]);
+  var dates = sheetname.getRange(9, 4, 1, 3).getValues()
+  var FinalEndDate = new Date(dates[0][1])
+  var FinalStartDate = new Date(dates[0][0])
   var gapchoice = dates[0][2]
-  if (gapchoice == 'Monthly'){var gap = 30}
-  if (gapchoice == 'Weekly'){var gap = 7}
-  if (gapchoice == 'Every 3 days'){var gap = 3}
-  if (gapchoice == 'Every 2 days'){var gap = 2}
-  if (gapchoice == 'Daily'){var gap = 1}
-  
+  if (gapchoice == 'Monthly') { var gap = 30 }
+  if (gapchoice == 'Weekly') { var gap = 7 }
+  if (gapchoice == 'Every 3 days') { var gap = 3 }
+  if (gapchoice == 'Every 2 days') { var gap = 2 }
+  if (gapchoice == 'Daily') { var gap = 1 }
+
   // Calculate the number of time periods or number of rows, based on start date, end date and gapchoice
-  var numberofloops = Math.floor((FinalEndDate.getTime() - FinalStartDate.getTime())/(1000 * 60 * 60 * 24 * gap))
-  
-  
+  var numberofloops = Math.floor((FinalEndDate.getTime() - FinalStartDate.getTime()) / (1000 * 60 * 60 * 24 * gap))
+
+
   // Calculate the start and end dates for each row, call all the query functions and fill in the respective columns
-  for (var i = 0; i < numberofloops+1; ++i) {
-    var EndDate = new Date(FinalStartDate);
-    var StartDate = new Date(FinalStartDate);
-     if (i== numberofloops){
-       // In case we are on the last row, the end date should match the end date entered by user and not overshoot it
-       EndDate = new Date(FinalEndDate);
-       StartDate.setDate(StartDate.getDate() + (gap*i));
-     }
+  for (var i = 0; i < numberofloops + 1; ++i) {
+    var EndDate = new Date(FinalStartDate)
+    var StartDate = new Date(FinalStartDate)
+    if (i == numberofloops) {
+      // In case we are on the last row, the end date should match the end date entered by user and not overshoot it
+      EndDate = new Date(FinalEndDate)
+      StartDate.setDate(StartDate.getDate() + (gap * i))
+    }
     else {
       // We calculate the start and end dates for each row (except the last row)
-      EndDate.setDate(EndDate.getDate() + (gap*(i+1)));
-      StartDate.setDate(StartDate.getDate() + (gap*i));
+      EndDate.setDate(EndDate.getDate() + (gap * (i + 1)))
+      StartDate.setDate(StartDate.getDate() + (gap * i))
     }
-    
-    //Set the dates on row i+startingrow on googlesheets
-    var rng = sheetname.getRange(i+startingrow, startingcolumn, 1, 1);
-    rng.setValue(Utilities.formatDate(StartDate, "GMT+2", "dd/MM/yyyy"))
-    var rng = sheetname.getRange(i+startingrow, startingcolumn+1, 1, 1);
-    rng.setValue(Utilities.formatDate(EndDate, "GMT+2", "dd/MM/yyyy"))
-    
-    // Convert to UTC format to pass into graphql query
-    StartDate = '"' + String(Utilities.formatDate(StartDate, "GMT+2", "yyyy-MM-dd'T'HH:mm:ss'Z'")) + '"';
-    EndDate = '"' + String(Utilities.formatDate(EndDate, "GMT+2", "yyyy-MM-dd'T'HH:mm:ss'Z'")) + '"';
-    
-    // Send in the parameters to the query function to generate a new query
-    var query = timeboundtypescountquery(StartDate, EndDate,"shipping");
-    parseweeklyreportsquery(query,"shipping", i, startingrow, startingcolumn);
-    query = timeboundtypescountquery(StartDate, EndDate,"receiving");
-    parseweeklyreportsquery(query, "receiving", i, startingrow, startingcolumn)
-    query = timeboundscanscountquery(StartDate, EndDate);
-    parseweeklyreportsquery(query, "scan", i, startingrow, startingcolumn)
-    query = timeboundreviewscountquery(StartDate, EndDate);
-    parseweeklyreportsquery(query, "reviews", i, startingrow, startingcolumn)
-    query = timeboundratingscountquery(StartDate, EndDate);
-    parseweeklyreportsquery(query, "ratings", i, startingrow, startingcolumn)
-    query = timeboundaverageratingsquery(StartDate, EndDate);
-    parseweeklyreportsquery(query, "averageratings", i, startingrow, startingcolumn)
 
-    /*parseweeklyreportsquery(
-      averageRepeatedClicksQuery(StartDate, EndDate), 
-      'averageRepetedClicks',
-      i, 
-      startingrow, 
-      startingcolumn)*/
+    //Set the dates on row i+startingrow on googlesheets
+    var rng = sheetname.getRange(i + startingrow, startingcolumn, 1, 1)
+    rng.setValue(Utilities.formatDate(StartDate, "GMT+2", "dd/MM/yyyy"))
+    var rng = sheetname.getRange(i + startingrow, startingcolumn + 1, 1, 1)
+    rng.setValue(Utilities.formatDate(EndDate, "GMT+2", "dd/MM/yyyy"))
+
+    // Convert to UTC format to pass into graphql query
+    StartDate = `"${String(Utilities.formatDate(StartDate, "GMT+2", "yyyy-MM-dd'T'HH:mm:ss'+'HH:mm"))}"`
+    EndDate = `"${String(Utilities.formatDate(EndDate, "GMT+2", "yyyy-MM-dd'T'HH:mm:ss'+'HH:mm"))}"`
+
+    // Create the query, send a POST request with the query, send the response to parseweeklyreport
+    // Send in the parameters to the query function to generate a new query
+    var query = MegaQuery(StartDate, EndDate)
+    parseweeklyreportsquery(query, i, startingrow, startingcolumn)
+
   }
 }
 
-function timeboundtypescountquery(StartDate, EndDate, type) {
-  // This function creates the query to count the number of shipping events and number of receiving events. Type = "shipping"/"receiving" between start and end dates
-  var columnvalues=  "{events(query:{STEP:{operator: IN, value: [" + '"' + type + '"' + "]}, RECORDEDAT:{operator: BETWEEN, value: ["+ StartDate+ "," + EndDate + "]}}){count}}";
-  return columnvalues
-}
-
-function timeboundscanscountquery(StartDate, EndDate) {
-  // This function creates the query to count the number of scans between start and end dates
-  var columnvalues= "{sessions(query:{CREATEDAT:{operator: BETWEEN, value: ["+ StartDate+ "," + EndDate + "]}}){count}}";
-  Logger.log(columnvalues)
-  return columnvalues
-}
-
-function timeboundreviewscountquery(StartDate, EndDate){
-  // This function creates the query to count the number of reviews between start and end dates
-  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} COMMENT: { operator: IS_NOT_NULL }}){count}}" 
-  //Logger.log(columnvalues); // Uncomment this if you want to log the query
-  return columnvalues
-}
-
-function timeboundratingscountquery(StartDate, EndDate) {
-  // This function creates the query to count the number of ratings between start and end dates
-  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count}}" 
-  return columnvalues
-}
-
-function timeboundaverageratingsquery(StartDate, EndDate) {
-  // This function creates the query to access the ratings
-  var columnvalues = "{sessions(query:{CREATEDAT:{operator: BETWEEN  value:[" + StartDate + "," + EndDate + "]} RATING: { operator: IS_NOT_NULL }}){count edges {node{answers{count edges{node{rating}}}}}}}" 
-  return columnvalues
-}
-
-const averageRepeatedClicksQuery = (startDate, endDate) => {
-  return `
+function MegaQuery(startDate, endDate) {
+  var query = `
   {
-    biztransactions(first:900) {
-      edges {
-        node {
-          sessions(
-            query: {
-              CREATEDAT: {
-                operator: BETWEEN
-                value: [${startDate}, ${endDate}]
-              }
-            }
-          ) { count }
+  ShippingEventsCount: 
+  events(
+    filter: {
+      stepIdentifier: { equalTo: "shipping" }
+      eventTime: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+  }){
+    totalCount
+  }
+  ReceivingEventsCount: events(
+    filter: {
+      stepIdentifier: { equalTo: "receiving" }
+      eventTime: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+    }
+  ) {
+    totalCount
+  }
+  EcommerceSessionsCount: sessions(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: true
+    }
+  ) {
+    totalCount
+  }
+    EcommerceSessionsWithComment:sessionsWithComment(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: true
+    }
+  ) {
+    totalCount
+  }
+  EcommerceSessionsWithRating:sessionsWithRating(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: true
+    }
+  ) {
+    totalCount
+  }
+  AllEcommerceSessionWithRatings:sessionsWithRating(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: true
+    }
+  ) {
+    nodes {
+      answers {
+        nodes {
+          rating
         }
       }
     }
-  }`
+  }
+  BiztxsWithSessions: biztransactions(
+    filter: { sessionBiztransactionLinksExist: true }
+  ) {
+    totalCount
+    edges {
+      node {
+        sessions(
+          filter: {
+            createdAt: {
+              greaterThanOrEqualTo: ${startDate}
+              lessThanOrEqualTo: ${endDate}
+            }
+          }
+        ) {
+          totalCount
+        }
+      }
+    }
+  }
+ InStoreSessionsCount: sessions(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: false
+    }
+  ) {
+    totalCount
+  }
+    InStoreSessionsWithComment:sessionsWithComment(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: false
+    }
+  ) {
+    totalCount
+  }
+  InStoreSessionsWithRating:sessionsWithRating(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: false
+    }
+  ) {
+    totalCount
+  }
+  AllInStoreSessionWithRatings:sessionsWithRating(
+    filter: {
+      createdAt: {
+        greaterThanOrEqualTo: ${startDate}
+        lessThanOrEqualTo: ${endDate}
+      }
+      sessionBiztransactionLinksExist: false
+    }
+  ) {
+    nodes {
+      answers {
+        nodes {
+          rating
+        }
+      }
+    }
+  }
+}  
+`
+  return query
 }
 
-function parseweeklyreportsquery(query, type, row, startingrow, startingcolumn){
+function parseweeklyreportsquery(query, row, startingrow, startingcolumn) {
   /*
     This function accepts the query (query), column name (type), the serial number of the data (row), the offset for row (startingrow), the offset for column (startingcolumn).
     It passes the query to the postrequest function. The response is then parsed as a JSON object. And it extracts the required value and prints it onto the sheet.
   */
-  
+
   // Send query to postrequest
-  Logger.log(query)
-  var response = sendpostrequest(query);  
-  
+  var response = sendpostrequest(query)
+  //var data = response  //We should remove this line when the mock test is over
   // Parse the JSON response
+  var json = response.getContentText()
+  var data = JSON.parse(json)
+
+  //Get the spreadsheet Weeklyreport
+  var ss = SpreadsheetApp.getActiveSpreadsheet()
+  var sheetname = ss.getSheetByName("WeeklyReport")
+
+
+  var ShippingEventsCount = data["data"]["ShippingEventsCount"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 2, 1, 1)
+  rng.setValue(ShippingEventsCount)
+
+  var ReceivingEventsCount = data["data"]["ReceivingEventsCount"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 3, 1, 1)
+  rng.setValue(ReceivingEventsCount)
+
+  var EcommerceSessionsCount = data["data"]["EcommerceSessionsCount"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 4, 1, 1)
+  rng.setValue(EcommerceSessionsCount)
+
+  var EcommerceSessionsWithComment = data["data"]["EcommerceSessionsWithComment"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 5, 1, 1)
+  rng.setValue(EcommerceSessionsWithComment)
+
+  var EcommerceSessionsWithRating = data["data"]["EcommerceSessionsWithRating"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 6, 1, 1)
+  rng.setValue(EcommerceSessionsWithRating)
+
+  if (EcommerceSessionsWithRating == 0) {
+    var rng = sheetname.getRange(startingrow + row, startingcolumn + 7, 1, 1)
+    rng.setValue(0)
+  }
+  else {
+    const reducer = (accumulator, currentValue) => {
+      if (currentValue["answers"]["nodes"][0] != null) {
+        return accumulator + currentValue["answers"]["nodes"][0]["rating"]
+      }
+      if (currentValue["answers"]["nodes"][1] != null) {
+        return accumulator + currentValue["answers"]["nodes"][1]["rating"]
+      }
+      return accumulator
+    }
+    const sumRatings = data["data"]["AllEcommerceSessionWithRatings"]["nodes"].reduce(reducer, 0)
+    var rng = sheetname.getRange(startingrow + row, startingcolumn + 7, 1, 1)
+    rng.setValue(sumRatings / EcommerceSessionsWithRating)
+  }
+
+  var Biztxs = data["data"]["BiztxsWithSessions"]
+  if (Biztxs["totalCount"] === 0) {
+    var rng = sheetname.getRange(startingrow + row, startingcolumn + 8, 1, 1)
+    rng.setValue(0)
+  }
+  else {
+    var total = 0
+    var clickedbiztx = 0
+    for (var j = 0; j < Biztxs["totalCount"]; ++j) {
+      const count = Biztxs["edges"][j]["node"]["sessions"]["totalCount"]
+      if (count === 0) { }
+      else {
+        clickedbiztx++
+        total += count
+      }
+    }
+    var average = 0
+    if (total !== 0 && clickedbiztx !== 0) {
+      average = total / clickedbiztx
+      var rng = sheetname.getRange(startingrow + row, startingcolumn + 8, 1, 1)
+      rng.setValue(average)
+    }
+    else {
+      var rng = sheetname.getRange(startingrow + row, startingcolumn + 8, 1, 1)
+      rng.setValue(0)
+    }
+  }
+
+  var InStoreSessionsCount = data["data"]["InStoreSessionsCount"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 9, 1, 1)
+  rng.setValue(InStoreSessionsCount)
+
+  var InStoreSessionsWithComment = data["data"]["InStoreSessionsWithComment"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 10, 1, 1)
+  rng.setValue(InStoreSessionsWithComment)
+
+  var InStoreSessionsWithRating = data["data"]["InStoreSessionsWithRating"]["totalCount"]
+  var rng = sheetname.getRange(startingrow + row, startingcolumn + 11, 1, 1)
+  rng.setValue(InStoreSessionsWithRating)
+
+  if (InStoreSessionsWithRating == 0) {
+    var rng = sheetname.getRange(startingrow + row, startingcolumn + 12, 1, 1)
+    rng.setValue(0)
+  }
+  else {
+    const reducer = (accumulator, currentValue) => {
+      if (currentValue["answers"]["nodes"][0] != null) {
+        return accumulator + currentValue["answers"]["nodes"][0]["rating"]
+      }
+      if (currentValue["answers"]["nodes"][1] != null) {
+        return accumulator + currentValue["answers"]["nodes"][1]["rating"]
+      }
+      return accumulator
+    }
+    const sumRatings = data["data"]["AllInStoreSessionWithRatings"]["nodes"].reduce(reducer, 0)
+    var rng = sheetname.getRange(startingrow + row, startingcolumn + 12, 1, 1)
+    rng.setValue(sumRatings / InStoreSessionsWithRating)
+  }
+}
+
+
+function awssearchreviews() {
+  /*
+  This is the main function to call for the customer reviews sheet. 
+  This function calls the reviewsquery function to create the required query and then passes the query to the parsereviewsquery function to parse the response and display on the google sheet.
+  */
+  var query = `
+  {
+  answers (orderBy: CREATED_AT_ASC){
+    nodes {
+      comment
+      rating
+      createdAt
+    }
+  }
+}
+`
+parsereviewsquery(query);
+}
+
+function parsereviewsquery(query){
+  /* 
+  This function takes in the passed parameter which is the graphql query and sends it to the sendpostrequest function.
+  Once the response is obtained, it parses it and then displays it on the google sheet.
+  */
+  
+  var response = sendpostrequest(query);  
+    
+  // Parse the JSON reply
   var json = response.getContentText();
   var data = JSON.parse(json);
   
-  //Get the spreadsheet Weeklyreport
+  // The data is a JSON object of the form {"data"{"answers"{"edges":[{"node}...]}
+  var result = data["data"]["answers"]["nodes"];
+  
+  //Get the sheetname
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheetname = ss.getSheetByName("WeeklyReport");
+  var reviewssheet = ss.getSheetByName("Customerreviews");
   
+  //Set starting row and column
+  var startingrow = 9
+  var startingcolumn = 2
   
-  //Print shipping data
-  if (type == "shipping"){
-    var result = data["data"]["events"]["count"];
-    var rng = sheetname.getRange(startingrow+row, startingcolumn+2, 1, 1);
-    rng.setValue(result)
-  }
-  
-  //Print receiving data
-  if (type == "receiving"){
-    var result = data["data"]["events"]["count"];
-    var rng = sheetname.getRange(startingrow+row, startingcolumn+3, 1, 1);
-    rng.setValue(result)
-  }
-  
-  //Print scans data  
-  if (type == "scan"){
-    var result = data["data"]["sessions"]["count"];
-    var rng = sheetname.getRange(startingrow+row, startingcolumn+4, 1, 1)
-    rng.setValue(result)
-  }
-  
-  
-  //Print reviews count data
-  if (type == "reviews"){
-    var result = data["data"]["sessions"]["count"];
-    var rng = sheetname.getRange(startingrow+row, startingcolumn+5, 1, 1)
-    rng.setValue(result)
-  }
-  
-  
-  //Print ratings data
-  if (type=="ratings"){
-    var result = data["data"]["sessions"]["count"];
-    var rng = sheetname.getRange(startingrow+row, startingcolumn+6, 1, 1)    
-    rng.setValue(result)
-    Logger.log("ratings" + result)
-  }
-  
-  //Print Average Ratings data
-  if (type == "averageratings"){
-    var numberofratings = data["data"]["sessions"]["count"];
-    if (numberofratings == 0){
-      var rng = sheetname.getRange(startingrow+row, startingcolumn+7, 1, 1)    
-      rng.setValue(0)
+  for (var i = 0, leni = result.length; i < leni; ++i) {
+    var comment = result[i]["comment"];
+    var rating = result[i]["rating"];
+    var date = result[i]["createdAt"];
+    
+    var rng = reviewssheet.getRange(i+startingrow, startingcolumn, 1, 1)
+    rng.setValue(comment);
+    var rng = reviewssheet.getRange(i+startingrow, 1+startingcolumn, 1, 1)
+    rng.setValue(rating);
+    var rng = reviewssheet.getRange(i+startingrow, 2+startingcolumn, 1, 1)
+    rng.setValue(date);
     }
-    else {
-      var sumratings = 0
-      for (var i = 0; i < numberofratings; ++i){
-        var rating = data["data"]["sessions"]["edges"][i].node["answers"]["edges"][0].node["rating"]
-        if (rating == null){
-          var rating = data["data"]["sessions"]["edges"][i].node["answers"]["edges"][1].node["rating"]
-          }
-        Logger.log(rating);
-        sumratings = sumratings + rating;
-      }
-      var avgrating = sumratings/numberofratings
-      var rng = sheetname.getRange(startingrow+row, startingcolumn+7, 1, 1)    
-      rng.setValue(avgrating)
-  }
- }
+   }
 
- if(type === 'averageRepetedClicks') {
-  const biztransactions = data["data"]["biztransactions"]["edges"]
-  if(!Array.isArray(biztransactions) || biztransactions.length === 0) { return undefined }
 
-  var clickedBiztx = 0
-  var total = 0
-  biztransactions.forEach(
-    (biztransaction) => {
-      const count = biztransaction["node"]["sessions"]["count"]
-      if(count === 0) { return }
-      clickedBiztx ++
-      return total += count
-   })
-
-  var average = 0  
-  if(total !== 0 && clickedBiztx !== 0) { 
-    average = total / clickedBiztx
-  }
-
-  var rng = sheetname.getRange(startingrow+row, startingcolumn+8, 1, 1)    
-  rng.setValue(average)
- }
-}

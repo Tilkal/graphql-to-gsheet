@@ -61,9 +61,9 @@ A new window will open up where you'll see an almost empty code editor like belo
 Delete the empty myFunction() from the code.gs file. On this blank sheet, we will write the code from this repository. First, change the name of code.gs to **onopen.gs** by clicking on the down arrow next to the file name. On this repository, open the Apps Script files folder and open **onopen.gs** and copy-paste the contents of it into **onopen.gs**. **SAVE THE FILE.** (ctrl + s) 
 ![Onopen](/Images/onopen.png)
   
-**5. Upload other files into the editor**
+**5. Upload other files into the editor (if there are any)**
 
-We can do the same with the other files in the repository. Let us say you want to copy searchbybatch.gs. Go to File > New > Script file and enter the name 'searchbybatch'. This opens up another script file with an empty function. As before, delete this and copy-paste the contents of searchbybatch.gs file from the repo to the empty script file in your browser. 
+We can do the same with the other files in the repository. Let us say you want to copy a file called file.gs. On your Apps script Edito, go to File > New > Script file and enter the name 'file'. This opens up another script file with an empty function. As before, delete this and copy-paste the contents of file.gs file from the repo to the empty script file in your browser. 
 
 **6. Save**
 
@@ -71,14 +71,19 @@ Once you have all the files in place, you are good to go. Save everything (If yo
 
 **7. Execute** 
 
-Refresh the Google Sheet and now you should have a pop up boxes open up that ask for your credentials. Enter your credentials. 
-
-**8. Custom Tilkal Menu**
-
-Now, you should see a a 'Custom Tilkal Menu' on the menu bar. Click on it to see the various views available to see your data. 
-
-
+Refresh the Google Sheet. Now, you should see a a **'Custom Tilkal Menu'** on the menu bar. Click on it to see the various views available to see your data. Click on one of the options. 
 ![Custommenu](/Images/custommenu.png)
+
+You will be asked to authorize google apps script to let you execute code. Give it the necessary permissions. Once you do, you may have to click on the **Custom Tilkal Menu** on the menu bar again. Make your choice one more time. This time, a new pop up box should open up asking you to enter a credential like 'Client name'. 
+
+![Credentials](/Images/credentials.png)
+
+
+Once you enter this, another box will pop up asking for network name. Once all the credentials have been provided, your script will run and you should see the result on the relevant page. 
+
+
+
+
 
 **That's it. You're all set up. Now you can access your data from Google sheets and use its BI tools like making graphs, charts and maps. If you would like to make your own functions to access even more views using google sheets and graphql, check out the How it works series of files.**
 
