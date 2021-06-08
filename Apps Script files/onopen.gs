@@ -676,3 +676,5 @@ function parsereviewsquery(query){
     rng.setValue(date);
     }
    }
+
+
